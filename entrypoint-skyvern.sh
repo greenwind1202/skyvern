@@ -1,10 +1,9 @@
-
 #!/bin/bash
 
 set -e
 
 # check alembic
-alembic upgrade head
+alembic upgrade heads
 alembic check
 
 if [ ! -f ".streamlit/secrets.toml" ]; then

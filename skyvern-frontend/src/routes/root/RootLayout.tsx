@@ -1,11 +1,10 @@
-import { Toaster } from "@/components/ui/toaster";
-import { useSidebarStore } from "@/store/SidebarStore";
-import { cn } from "@/util/utils";
 import { Outlet } from "react-router-dom";
-import { Header } from "./Header";
-import { Sidebar } from "./Sidebar";
+import { cn } from "@/util/utils";
+import { useSidebarStore } from "@/store/SidebarStore";
+import { Header } from "@/routes/root/Header";
+import { Sidebar } from "@/routes/root/Sidebar";
 
-function RootLayout() {
+export function RootLayout() {
   const collapsed = useSidebarStore((state) => state.collapsed);
 
   return (
@@ -21,9 +20,6 @@ function RootLayout() {
           <Outlet />
         </main>
       </div>
-      <Toaster />
     </>
   );
 }
-
-export { RootLayout };

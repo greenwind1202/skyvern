@@ -14,13 +14,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { envCredential } from "@/util/env";
 import { HiddenCopyableInput } from "@/components/ui/hidden-copyable-input";
 
 function Settings() {
   const { environment, organization, setEnvironment, setOrganization } =
     useSettingsStore();
-  const apiKey = envCredential;
+  const apiKey = localStorage.getItem("apiKey") ?? "API key not found";
 
   return (
     <div className="flex flex-col gap-8">
@@ -64,7 +63,7 @@ function Settings() {
           <CardDescription>Currently active API key</CardDescription>
         </CardHeader>
         <CardContent className="p-8">
-          <HiddenCopyableInput value={apiKey ?? "API key not found"} />
+          <HiddenCopyableInput value={apiKey} />
         </CardContent>
       </Card>
     </div>

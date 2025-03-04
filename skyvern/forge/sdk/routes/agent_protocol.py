@@ -58,7 +58,7 @@ from skyvern.forge.sdk.schemas.tasks import (
     TaskStatus,
 )
 from skyvern.forge.sdk.schemas.workflow_runs import WorkflowRunTimeline
-from skyvern.forge.sdk.services import org_auth_service, task_v2_service
+from skyvern.forge.sdk.services import org_auth_service, task_v2_service, org_auth_token_service
 from skyvern.forge.sdk.workflow.exceptions import (
     FailedToCreateWorkflow,
     FailedToUpdateWorkflow,
@@ -960,9 +960,12 @@ async def get_workflows(
     title: str = Query(""),
     current_org: Organization = Depends(org_auth_service.get_current_org),
     template: bool = Query(False),
+    organization_id: str = Query(None),
 ) -> list[Workflow]:
     """
     Get all workflows with the latest version for the organization.
+    If organization_id is provided and the user has access to it, return workflows for that organization.
+    Otherwise, return workflows for the current organization.
     """
     analytics.capture("skyvern-oss-agent-workflows-get")
 
@@ -985,8 +988,26 @@ async def get_workflows(
             detail="only_saved_tasks and only_workflows cannot be used together",
         )
 
+    # Always use the current organization's ID for filtering
+    target_org_id = current_org.organization_id
+
+    # If organization_id is provided, verify access and use it
+    if organization_id and organization_id != current_org.organization_id:
+        # Verify the user has access to the specified organization
+        user_orgs = await app.DATABASE.get_user_organizations(
+            user_id=current_org.user_id if hasattr(current_org, "user_id") else None
+        )
+        user_org_ids = [org.organization_id for org in user_orgs]
+
+        if organization_id not in user_org_ids:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You do not have access to this organization's workflows",
+            )
+        target_org_id = organization_id
+
     return await app.WORKFLOW_SERVICE.get_workflows_by_organization_id(
-        organization_id=current_org.organization_id,
+        organization_id=target_org_id,
         page=page,
         page_size=page_size,
         only_saved_tasks=only_saved_tasks,
@@ -1160,6 +1181,20 @@ async def get_org_api_keys(
     if org_auth_token:
         api_keys.append(org_auth_token)
     return GetOrganizationAPIKeysResponse(api_keys=api_keys)
+
+
+@base_router.post("/organizations/{organization_id}/apikeys/", include_in_schema=False)
+@base_router.post("/organizations/{organization_id}/apikeys")
+async def create_org_api_key(
+    organization_id: str,
+    current_org: Organization = Depends(org_auth_service.get_current_org),
+) -> GetOrganizationAPIKeysResponse:
+    if organization_id != current_org.organization_id:
+        raise HTTPException(status_code=403, detail="You do not have permission to access this organization")
+    
+    # Create a new API key for the organization
+    org_auth_token = await org_auth_token_service.create_org_api_token(organization_id)
+    return GetOrganizationAPIKeysResponse(api_keys=[org_auth_token])
 
 
 async def validate_file_size(file: UploadFile) -> UploadFile:

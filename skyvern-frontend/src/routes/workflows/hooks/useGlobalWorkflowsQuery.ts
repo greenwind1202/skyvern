@@ -1,14 +1,17 @@
 import { getClient } from "@/api/AxiosClient";
 import { useCredentialGetter } from "@/hooks/useCredentialGetter";
+import { useApiCredential } from "@/hooks/useApiCredential";
 import { useQuery } from "@tanstack/react-query";
 import { WorkflowApiResponse } from "../types/workflowTypes";
 
 function useGlobalWorkflowsQuery() {
   const credentialGetter = useCredentialGetter();
+  const apiKey = useApiCredential();
+
   return useQuery({
     queryKey: ["globalWorkflows"],
     queryFn: async () => {
-      const client = await getClient(credentialGetter);
+      const client = await getClient(credentialGetter, "v1", apiKey);
       const params = new URLSearchParams();
       params.set("template", "true");
       params.set("page_size", "100");

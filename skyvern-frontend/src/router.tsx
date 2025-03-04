@@ -1,40 +1,62 @@
 import { Navigate, Outlet, createBrowserRouter } from "react-router-dom";
-import { RootLayout } from "./routes/root/RootLayout";
-import { Settings } from "./routes/settings/Settings";
-import { SettingsPageLayout } from "./routes/settings/SettingsPageLayout";
-import { TasksPageLayout } from "./routes/tasks/TasksPageLayout";
-import { CreateNewTaskFormPage } from "./routes/tasks/create/CreateNewTaskFormPage";
-import { RetryTask } from "./routes/tasks/create/retry/RetryTask";
-import { StepArtifactsLayout } from "./routes/tasks/detail/StepArtifactsLayout";
-import { TaskActions } from "./routes/tasks/detail/TaskActions";
-import { TaskDetails } from "./routes/tasks/detail/TaskDetails";
-import { TaskParameters } from "./routes/tasks/detail/TaskParameters";
-import { TaskRecording } from "./routes/tasks/detail/TaskRecording";
-import { TasksPage } from "./routes/tasks/list/TasksPage";
-import { WorkflowPage } from "./routes/workflows/WorkflowPage";
-import { WorkflowRun } from "./routes/workflows/WorkflowRun";
-import { WorkflowRunParameters } from "./routes/workflows/WorkflowRunParameters";
-import { Workflows } from "./routes/workflows/Workflows";
-import { WorkflowsPageLayout } from "./routes/workflows/WorkflowsPageLayout";
-import { WorkflowEditor } from "./routes/workflows/editor/WorkflowEditor";
-import { WorkflowRunOutput } from "./routes/workflows/workflowRun/WorkflowRunOutput";
-import { WorkflowPostRunParameters } from "./routes/workflows/workflowRun/WorkflowPostRunParameters";
-import { WorkflowRunRecording } from "./routes/workflows/workflowRun/WorkflowRunRecording";
-import { WorkflowRunOverview } from "./routes/workflows/workflowRun/WorkflowRunOverview";
-import { DiscoverPageLayout } from "./routes/discover/DiscoverPageLayout";
-import { DiscoverPage } from "./routes/discover/DiscoverPage";
-import { HistoryPageLayout } from "./routes/history/HistoryPageLayout";
-import { HistoryPage } from "./routes/history/HistoryPage";
+import { RootLayout } from "@/routes/root/RootLayout";
+import { Settings } from "@/routes/settings/Settings";
+import { SettingsPageLayout } from "@/routes/settings/SettingsPageLayout";
+import { TasksPageLayout } from "@/routes/tasks/TasksPageLayout";
+import { CreateNewTaskFormPage } from "@/routes/tasks/create/CreateNewTaskFormPage";
+import { RetryTask } from "@/routes/tasks/create/retry/RetryTask";
+import { StepArtifactsLayout } from "@/routes/tasks/detail/StepArtifactsLayout";
+import { TaskActions } from "@/routes/tasks/detail/TaskActions";
+import { TaskDetails } from "@/routes/tasks/detail/TaskDetails";
+import { TaskParameters } from "@/routes/tasks/detail/TaskParameters";
+import { TaskRecording } from "@/routes/tasks/detail/TaskRecording";
+import { TasksPage } from "@/routes/tasks/list/TasksPage";
+import { WorkflowPage } from "@/routes/workflows/WorkflowPage";
+import { WorkflowRun } from "@/routes/workflows/WorkflowRun";
+import { WorkflowRunParameters } from "@/routes/workflows/WorkflowRunParameters";
+import { Workflows } from "@/routes/workflows/Workflows";
+import { WorkflowsPageLayout } from "@/routes/workflows/WorkflowsPageLayout";
+import { WorkflowEditor } from "@/routes/workflows/editor/WorkflowEditor";
+import { WorkflowRunOutput } from "@/routes/workflows/workflowRun/WorkflowRunOutput";
+import { WorkflowPostRunParameters } from "@/routes/workflows/workflowRun/WorkflowPostRunParameters";
+import { WorkflowRunRecording } from "@/routes/workflows/workflowRun/WorkflowRunRecording";
+import { WorkflowRunOverview } from "@/routes/workflows/workflowRun/WorkflowRunOverview";
+import { DiscoverPageLayout } from "@/routes/discover/DiscoverPageLayout";
+import { DiscoverPage } from "@/routes/discover/DiscoverPage";
+import { HistoryPageLayout } from "@/routes/history/HistoryPageLayout";
+import { HistoryPage } from "@/routes/history/HistoryPage";
+import { AuthLayout } from "@/routes/auth/AuthLayout";
+import { Login } from "@/routes/auth/Login";
+import { Register } from "@/routes/auth/Register";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootLayout />,
+    element: <Navigate to="/workflows" />,
+  },
+  {
+    path: "/",
+    element: <AuthLayout />,
     children: [
       {
-        index: true,
-        element: <Navigate to="/discover" />,
+        path: "login",
+        element: <Login />,
       },
+      {
+        path: "register",
+        element: <Register />,
+      },
+    ],
+  },
+  {
+    path: "/",
+    element: (
+      <ProtectedRoute>
+        <RootLayout />
+      </ProtectedRoute>
+    ),
+    children: [
       {
         path: "tasks",
         element: <TasksPageLayout />,

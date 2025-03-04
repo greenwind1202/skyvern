@@ -41,6 +41,8 @@ from skyvern.forge.sdk.db.id import (
     generate_task_v2_id,
     generate_thought_id,
     generate_totp_code_id,
+    generate_user_id,
+    generate_user_organization_id,
     generate_workflow_id,
     generate_workflow_parameter_id,
     generate_workflow_permanent_id,
@@ -680,3 +682,37 @@ class CredentialModel(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     modified_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow, nullable=False)
     deleted_at = Column(DateTime, nullable=True)
+
+
+class UserModel(Base):
+    __tablename__ = "users"
+
+    user_id = Column(String, primary_key=True, index=True, default=generate_user_id)
+    email = Column(String, unique=True, nullable=False, index=True)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    password = Column(String, nullable=False)  # This will store the hashed password
+    is_active = Column(Boolean, default=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
+    modified_at = Column(
+        DateTime,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.utcnow,
+        nullable=False,
+    )
+
+
+class UserOrganizationModel(Base):
+    __tablename__ = "user_organizations"
+
+    user_organization_id = Column(String, primary_key=True, index=True, default=generate_user_organization_id)
+    user_id = Column(String, ForeignKey("users.user_id"), nullable=False, index=True)
+    organization_id = Column(String, ForeignKey("organizations.organization_id"), nullable=False, index=True)
+    is_admin = Column(Boolean, default=False, nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
+    modified_at = Column(
+        DateTime,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.utcnow,
+        nullable=False,
+    )

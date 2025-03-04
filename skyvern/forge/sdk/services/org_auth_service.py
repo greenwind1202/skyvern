@@ -1,5 +1,6 @@
 import time
 from typing import Annotated
+from datetime import datetime
 
 from asyncache import cached
 from cachetools import TTLCache
@@ -84,26 +85,39 @@ async def _get_current_org_cached(x_api_key: str, db: AgentDB) -> Organization:
     Authentication is cached for one hour
     """
     try:
+        print(f"x_api_key: {x_api_key}")
         payload = jwt.decode(
             x_api_key,
             settings.SECRET_KEY,
             algorithms=[ALGORITHM],
         )
+        print(f"payload: {payload}")
         api_key_data = TokenPayload(**payload)
+        print(f"api_key_data: {api_key_data}")
     except (JWTError, ValidationError):
+        print(f"JWTError, ValidationError")
+        print(f"JWTError: {JWTError}")
+        print(f"ValidationError: {ValidationError}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    if api_key_data.exp < time.time():
+    
+    # Convert exp from timestamp to datetime for comparison
+    exp_datetime = datetime.fromtimestamp(api_key_data.exp)
+    if exp_datetime < datetime.utcnow():
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Auth token is expired",
+            detail="API key has expired",
         )
-
-    organization = await db.get_organization(organization_id=api_key_data.sub)
+    
+    # Get organization by ID from token
+    organization = await db.get_organization(api_key_data.organization_id)
     if not organization:
-        raise HTTPException(status_code=404, detail="Organization not found")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Organization not found",
+        )
 
     # check if the token exists in the database
     api_key_db_obj = await db.validate_org_auth_token(

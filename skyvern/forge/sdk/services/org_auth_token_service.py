@@ -28,6 +28,7 @@ async def create_org_api_token(org_id: str) -> OrganizationAuthToken:
     api_key = security.create_access_token(
         org_id,
         expires_delta=API_KEY_LIFETIME,
+        organization_id=org_id,
     )
     # generate OrganizationAutoToken
     org_auth_token = await DATABASE.create_org_auth_token(

@@ -49,6 +49,7 @@ TASK_PREFIX = "tsk"
 TASK_RUN_PREFIX = "tr"
 TOTP_CODE_PREFIX = "totp"
 USER_PREFIX = "u"
+USER_ORGANIZATION_PREFIX = "uo"
 WORKFLOW_PARAMETER_PREFIX = "wp"
 WORKFLOW_PERMANENT_ID_PREFIX = "wpid"
 WORKFLOW_PREFIX = "w"
@@ -189,6 +190,11 @@ def generate_credential_id() -> str:
 def generate_organization_bitwarden_collection_id() -> str:
     int_id = generate_id()
     return f"{ORGANIZATION_BITWARDEN_COLLECTION_PREFIX}_{int_id}"
+
+
+def generate_user_organization_id() -> str:
+    int_id = generate_id()
+    return f"{USER_ORGANIZATION_PREFIX}_{int_id}"
 
 
 def generate_id() -> int:

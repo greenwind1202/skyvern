@@ -32,6 +32,7 @@ class Agent:
             api_key = security.create_access_token(
                 organization.organization_id,
                 expires_delta=API_KEY_LIFETIME,
+                organization_id=organization.organization_id,
             )
             # generate OrganizationAutoToken
             await app.DATABASE.create_org_auth_token(

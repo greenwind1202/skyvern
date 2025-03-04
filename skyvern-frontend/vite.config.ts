@@ -7,6 +7,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 8080,
+    fs: {
+      strict: true,
+      allow: ['..']
+    }
   },
   preview: {
     port: 8080,
@@ -15,5 +19,6 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    extensions: ['.js', '.jsx', '.ts', '.tsx']
   },
 });

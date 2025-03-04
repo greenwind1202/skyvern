@@ -11,6 +11,7 @@ from skyvern.config import settings
 def create_access_token(
     subject: Union[str, Any],
     expires_delta: timedelta | None = None,
+    organization_id: str | None = None,
 ) -> str:
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -18,7 +19,13 @@ def create_access_token(
         expire = datetime.utcnow() + timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES,
         )
-    to_encode = {"exp": expire, "sub": str(subject)}
+    if organization_id is None:
+        organization_id = str(subject)
+    to_encode = {
+        "exp": expire.timestamp(),
+        "sub": str(subject),
+        "organization_id": organization_id,
+    }
     encoded_jwt = jwt.encode(
         to_encode,
         settings.SECRET_KEY,

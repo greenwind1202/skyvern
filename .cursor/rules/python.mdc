@@ -1,0 +1,130 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Skyvern Project Best Practices and Coding Standards
+
+## General Project Structure
+1. **Monorepo Architecture**: The project follows a monorepo structure with separate directories for backend (`skyvern/`) and frontend (`skyvern-frontend/`).
+2. **Docker-based Development**: The project uses Docker for containerization, with separate containers for the backend, frontend, and database services.
+3. **Environment Configuration**: Environment variables are managed through `.env` files with examples provided in `.env.example` files.
+
+## Backend (Python) Standards
+
+### Code Style and Formatting
+1. **Python Version**: Python 3.11 is the standard version used throughout the project.
+2. **Type Annotations**: Strict type annotations are required for all Python code:
+   - `disallow_untyped_defs = True` in mypy configuration
+   - Type checking is enforced via pre-commit hooks
+   - All function parameters and return types must be properly annotated
+
+3. **Code Formatting**:
+   - Ruff is used for linting and formatting Python code
+   - Maximum line length is 88 characters (Black-compatible)
+   - Isort is used for organizing imports
+   - Autoflake removes unused imports
+
+4. **Error Handling**:
+   - Proper exception handling with specific exception types
+   - Detailed error messages and appropriate HTTP status codes for API responses
+
+### Architecture
+1. **FastAPI Framework**: The backend uses FastAPI for API development.
+2. **SQLAlchemy ORM**: Database interactions use SQLAlchemy with async support.
+3. **Alembic Migrations**: Database schema changes are managed through Alembic migrations.
+4. **Pydantic Models**: Data validation and serialization use Pydantic schemas.
+5. **Service-oriented Architecture**:
+   - Clear separation between routes, services, and data access layers
+   - Routes handle HTTP requests and responses
+   - Services contain business logic
+   - Database models handle data persistence
+
+6. **Dependency Injection**: FastAPI's dependency injection system is used for managing dependencies.
+
+## Frontend (TypeScript/React) Standards
+
+### Code Style and Formatting
+1. **TypeScript**: The frontend is built with TypeScript with strict type checking enabled.
+2. **ESLint and Prettier**: Code quality and formatting are enforced through ESLint and Prettier.
+3. **React Hooks**: The project follows React hooks best practices.
+
+### Architecture
+1. **Component Structure**:
+   - UI components are organized in a component library under `src/components/ui/`
+   - Reusable components follow a consistent pattern
+   - Shadcn UI is used as the component library foundation
+
+2. **State Management**:
+   - React Context API is used for global state management
+   - Custom hooks for reusable logic
+
+3. **Routing**:
+   - React Router for navigation
+   - Protected routes for authenticated sections
+
+4. **API Communication**:
+   - Axios for HTTP requests
+   - Centralized API client configuration
+
+5. **Styling**:
+   - Tailwind CSS for styling
+   - Consistent use of design tokens and utility classes
+   - Dark mode support through a theme provider
+
+## Development Workflow
+
+1. **Pre-commit Hooks**: All code changes must pass pre-commit hooks that enforce:
+   - Code formatting
+   - Linting
+   - Type checking
+   - Import sorting
+   - Alembic migration checks
+
+2. **Database Migrations**:
+   - All database schema changes require Alembic migrations
+   - Migrations are checked during pre-commit
+
+3. **Documentation**:
+   - Code should be well-documented with docstrings
+   - README files should be kept up-to-date
+   - Table of contents is automatically generated with doctoc
+
+## Security Practices
+
+1. **Authentication**:
+   - JWT-based authentication
+   - Proper password hashing using passlib/bcrypt
+   - Token expiration and validation
+
+2. **Authorization**:
+   - Role-based access control
+   - Organization-based permissions
+
+3. **Environment Variables**:
+   - Sensitive information stored in environment variables
+   - Example files provided without actual secrets
+
+## Testing Standards
+
+1. **Python Testing**:
+   - Tests are written using pytest
+   - Type checking is applied to test code
+   - Pre-commit hooks ensure tests pass
+
+2. **Frontend Testing**:
+   - Component testing with appropriate tools
+
+## Contribution Guidelines
+
+1. **Pull Requests**:
+   - All changes should be made through pull requests
+   - Code reviews are required before merging
+
+2. **Commit Messages**:
+   - Clear and descriptive commit messages
+   - Reference issue numbers when applicable
+
+3. **Issue Tracking**:
+   - Bug reports should include detailed reproduction steps
+   - Enhancement suggestions should be well-documented

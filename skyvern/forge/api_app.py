@@ -10,6 +10,9 @@ from pydantic import ValidationError
 from starlette.requests import HTTPConnection, Request
 from starlette_context.middleware import RawContextMiddleware
 from starlette_context.plugins.base import Plugin
+from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.middleware.base import BaseHTTPMiddleware
+from contextlib import asynccontextmanager
 
 from skyvern.config import settings
 from skyvern.exceptions import SkyvernHTTPException
@@ -18,6 +21,7 @@ from skyvern.forge.sdk.core import skyvern_context
 from skyvern.forge.sdk.core.skyvern_context import SkyvernContext
 from skyvern.forge.sdk.db.exceptions import NotFoundError
 from skyvern.forge.sdk.routes.agent_protocol import base_router, v2_router
+from skyvern.forge.sdk.routes.auth import router as auth_router
 from skyvern.forge.sdk.routes.streaming import websocket_router
 from skyvern.forge.sdk.routes.totp import totp_router
 
@@ -31,12 +35,28 @@ class ExecutionDatePlugin(Plugin):
         return datetime.now()
 
 
+class SQLAlchemyMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        async with forge_app.DATABASE.Session() as session:
+            response = await call_next(request)
+            return response
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    LOG.info("Starting up FastAPI application")
+    yield
+    # Shutdown
+    LOG.info("Shutting down FastAPI application")
+
+
 def get_agent_app() -> FastAPI:
     """
     Start the agent server.
     """
 
-    app = FastAPI()
+    app = FastAPI(lifespan=lifespan)
 
     # Add CORS middleware
     app.add_middleware(
@@ -45,12 +65,17 @@ def get_agent_app() -> FastAPI:
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
+        expose_headers=["*"],
     )
+
+    # Add SQLAlchemy middleware
+    app.add_middleware(SQLAlchemyMiddleware)
 
     app.include_router(base_router, prefix="/api/v1")
     app.include_router(v2_router, prefix="/api/v2")
     app.include_router(websocket_router, prefix="/api/v1/stream")
     app.include_router(totp_router, prefix="/api/v1/totp")
+    app.include_router(auth_router, prefix="/api/v1")
 
     app.add_middleware(
         RawContextMiddleware,

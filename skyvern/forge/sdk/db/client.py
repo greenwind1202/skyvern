@@ -2211,7 +2211,7 @@ class AgentDB:
         webhook_callback_url: str | None = None,
     ) -> TaskV2:
         async with self.Session() as session:
-            new_task_v2 = TaskV2Model(
+            new_task_v2 = ObserverCruiseModel(
                 workflow_run_id=workflow_run_id,
                 workflow_id=workflow_id,
                 workflow_permanent_id=workflow_permanent_id,
@@ -2305,7 +2305,7 @@ class AgentDB:
                 if workflow_permanent_id:
                     thought_obj.workflow_permanent_id = workflow_permanent_id
                 if observation:
-                    thought_obj.observation = observation
+                    observer_thought.observation = observation
                 if thought:
                     thought_obj.thought = thought
                 if answer:
@@ -2878,3 +2878,17 @@ class AgentDB:
             query = query.filter_by(cached=True).order_by(TaskRunModel.created_at.desc())
             task_run = (await session.scalars(query)).first()
             return TaskRun.model_validate(task_run) if task_run else None
+
+# Add this at the end of the file
+async def get_db():
+    """
+    Dependency to get a database session.
+    """
+    from skyvern.config import settings
+
+    db = AgentDB(settings.DATABASE_STRING)
+    session = db.Session()
+    try:
+        yield session
+    finally:
+        await session.close()

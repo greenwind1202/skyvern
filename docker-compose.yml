@@ -3,8 +3,8 @@ services:
     image: postgres:14-alpine
     restart: always
     # comment out if you want to externally connect DB
-    # ports:
-    #   - 5432:5432
+    ports:
+      - 5432:5432
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
     environment:
@@ -19,7 +19,9 @@ services:
       retries: 5
 
   skyvern:
-    image: public.ecr.aws/skyvern/skyvern:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: on-failure
     # comment out if you want to externally call skyvern API
     ports:
@@ -31,13 +33,15 @@ services:
       - ./log:/data/log
       - ./.streamlit:/app/.streamlit
       # Uncomment if you want to connect to any local changes
+      - ./skyvern:/app/skyvern
       # - ./skyvern:/app/skyvern
     environment:
       - DATABASE_STRING=postgresql+psycopg://skyvern:skyvern@postgres:5432/skyvern
       - BROWSER_TYPE=chromium-headful
       - ENABLE_OPENAI=true
       - LLM_KEY=OPENAI_GPT4O
-      - OPENAI_API_KEY=<your_openai_key>
+      - SECRET_KEY=skyvern_secure_jwt_key_2024
+      - OPENAI_API_KEY=
       # If you want to use other LLM provider, like azure and anthropic:
       # - ENABLE_ANTHROPIC=true
       # - LLM_KEY=ANTHROPIC_CLAUDE3.5_SONNET
@@ -81,7 +85,9 @@ services:
       retries: 5
 
   skyvern-ui:
-    image: public.ecr.aws/skyvern/skyvern-ui:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
     restart: on-failure
     ports:
       - 8080:8080
@@ -91,6 +97,10 @@ services:
       - ./videos:/data/videos
       - ./har:/data/har
       - ./.streamlit:/app/.streamlit
+      # For local development, excluding node_modules
+      - ./skyvern-frontend:/app
+      - /app/node_modules
+      - ./entrypoint-skyvernui.sh:/app/entrypoint-skyvernui.sh
     environment:
     # if you want to run skyvern on a remote server,
     # you need to change the host in VITE_WSS_BASE_URL and VITE_API_BASE_URL to match your server ip
@@ -99,9 +109,8 @@ services:
     #   A route for the UI: yourdomain.com -> localhost:8080
     #   A route for the artifact API: artifact.yourdomain.com -> localhost:9090 (maybe not needed)
       - VITE_WSS_BASE_URL=ws://localhost:8000/api/v1
-    #   - VITE_ARTIFACT_API_BASE_URL=http://localhost:9090
-    #   - VITE_API_BASE_URL=http://localhost:8000/api/v1
-    #   - VITE_SKYVERN_API_KEY=<get this from "settings" in the Skyvern UI>
+      - VITE_ARTIFACT_API_BASE_URL=http://localhost:9090
+      - VITE_API_BASE_URL=http://localhost:8000/api/v1
     depends_on:
       skyvern:
         condition: service_healthy

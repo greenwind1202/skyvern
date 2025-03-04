@@ -131,4 +131,5 @@ class Step(BaseModel):
 
 class TokenPayload(BaseModel):
     sub: str
-    exp: int
+    exp: float
+    organization_id: str
