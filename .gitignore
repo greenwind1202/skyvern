@@ -181,3 +181,4 @@ tags
 tags.lock
 tags.temp
 tags.temp.tmp
+.specstory/*
