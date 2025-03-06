@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import { envCredential } from "@/util/env";
 import { toast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { useApiCredential } from "@/hooks/useApiCredential";
 
 type StreamMessage = {
   task_id: string;
@@ -24,6 +25,7 @@ function WorkflowRunStream() {
   const [streamImgSrc, setStreamImgSrc] = useState<string>("");
   const showStream = workflowRun && statusIsNotFinalized(workflowRun);
   const credentialGetter = useCredentialGetter();
+  const apiCredential = useApiCredential();
   const { workflowRunId, workflowPermanentId } = useParams();
   const queryClient = useQueryClient();
 
@@ -39,7 +41,7 @@ function WorkflowRunStream() {
         const token = await credentialGetter();
         credential = `?token=Bearer ${token}`;
       } else {
-        credential = `?apikey=${envCredential}`;
+        credential = `?apikey=${apiCredential}`;
       }
       if (socket) {
         socket.close();
@@ -112,6 +114,7 @@ function WorkflowRunStream() {
     showStream,
     queryClient,
     workflowPermanentId,
+    apiCredential,
   ]);
 
   if (workflowRun?.status === Status.Created) {

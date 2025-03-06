@@ -1,11 +1,12 @@
-import { artifactApiBaseUrl } from "@/util/env";
 import { useWorkflowRunQuery } from "../hooks/useWorkflowRunQuery";
+import { artifactApiBaseUrl } from "@/util/env";
 
 function WorkflowRunRecording() {
   const { data: workflowRun } = useWorkflowRunQuery();
-  const recordingURL = workflowRun?.recording_url
-    ? `${artifactApiBaseUrl}/artifact/recording?path=${workflowRun.recording_url.slice(7)}`
-    : null;
+  let recordingURL = workflowRun?.recording_url;
+  if (recordingURL?.startsWith("file://")) {
+    recordingURL = `${artifactApiBaseUrl}/artifact/recording?path=${recordingURL.slice(7)}`;
+  }
   return recordingURL ? (
     <video src={recordingURL} controls className="w-full rounded-md" />
   ) : (

@@ -6,6 +6,7 @@ import { ZoomableImage } from "@/components/ZoomableImage";
 import { useCostCalculator } from "@/hooks/useCostCalculator";
 import { useCredentialGetter } from "@/hooks/useCredentialGetter";
 import { envCredential } from "@/util/env";
+import { useApiCredential } from "@/hooks/useApiCredential";
 import {
   keepPreviousData,
   useQuery,
@@ -40,6 +41,7 @@ const wssBaseUrl = import.meta.env.VITE_WSS_BASE_URL;
 function TaskActions() {
   const { taskId } = useParams();
   const credentialGetter = useCredentialGetter();
+  const apiCredential = useApiCredential();
   const [streamImgSrc, setStreamImgSrc] = useState<string>("");
   const [selectedAction, setSelectedAction] = useState<
     number | "stream" | null
@@ -79,13 +81,19 @@ function TaskActions() {
         const token = await credentialGetter();
         credential = `?token=Bearer ${token}`;
       } else {
-        credential = `?apikey=${envCredential}`;
+        credential = `?x-api-key=${apiCredential}`;
       }
       if (socket) {
         socket.close();
       }
       socket = new WebSocket(
         `${wssBaseUrl}/stream/tasks/${taskId}${credential}`,
+        [],
+        {
+          headers: {
+            "x-api-key": apiCredential || "",
+          },
+        },
       );
       // Listen for messages
       socket.addEventListener("message", (event) => {
@@ -137,7 +145,13 @@ function TaskActions() {
         socket = null;
       }
     };
-  }, [credentialGetter, taskId, taskIsRunningOrQueued, queryClient]);
+  }, [
+    credentialGetter,
+    taskId,
+    taskIsRunningOrQueued,
+    queryClient,
+    apiCredential,
+  ]);
 
   const { data: steps, isLoading: stepsIsLoading } = useQuery<
     Array<StepApiResponse>

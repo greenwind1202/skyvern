@@ -5,7 +5,7 @@ function DiscoverPage() {
   return (
     <div className="space-y-10">
       <PromptBox />
-      <WorkflowTemplates />
+      {/* <WorkflowTemplates /> */}
     </div>
   );
 }

@@ -40,8 +40,9 @@ export type WorkflowParameterYAML = ParameterYAMLBase & {
 
 export type BitwardenLoginCredentialParameterYAML = ParameterYAMLBase & {
   parameter_type: "bitwarden_login_credential";
-  bitwarden_collection_id: string;
-  url_parameter_key: string;
+  bitwarden_collection_id: string | null;
+  bitwarden_item_id: string | null;
+  url_parameter_key: string | null;
   bitwarden_client_id_aws_secret_key: string;
   bitwarden_client_secret_aws_secret_key: string;
   bitwarden_master_password_aws_secret_key: string;
@@ -140,7 +141,7 @@ export type Taskv2BlockYAML = BlockYAMLBase & {
   prompt: string;
   totp_verification_url: string | null;
   totp_identifier: string | null;
-  max_iterations: number | null;
+  max_steps: number | null;
 };
 
 export type ValidationBlockYAML = BlockYAMLBase & {

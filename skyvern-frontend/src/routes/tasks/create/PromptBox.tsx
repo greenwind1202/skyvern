@@ -42,6 +42,7 @@ import {
   generateUniqueEmail,
 } from "../data/sampleTaskData";
 import { ExampleCasePill } from "./ExampleCasePill";
+import { MAX_STEPS_DEFAULT } from "@/routes/workflows/editor/nodes/Taskv2Node/types";
 
 function createTemplateTaskFromTaskGenerationParameters(
   values: TaskGenerationApiResponse,
@@ -167,7 +168,7 @@ function PromptBox() {
         },
         {
           headers: {
-            "x-max-iterations-override": maxStepsOverride,
+            "x-max-steps-override": maxStepsOverride,
           },
         },
       );
@@ -266,7 +267,7 @@ function PromptBox() {
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Enter your prompt..."
               />
-              <Select
+              {/* <Select
                 value={selectValue}
                 onValueChange={(value: "v1" | "v2") => {
                   setSelectValue(value);
@@ -297,15 +298,15 @@ function PromptBox() {
                     </div>
                   </CustomSelectItem>
                 </SelectContent>
-              </Select>
-              <div className="flex items-center">
+              </Select> */}
+              {/* <div className="flex items-center">
                 <GearIcon
                   className="size-6 cursor-pointer"
                   onClick={() => {
                     setShowAdvancedSettings((value) => !value);
                   }}
                 />
-              </div>
+              </div> */}
               <div className="flex items-center">
                 {startObserverCruiseMutation.isPending ||
                 getTaskFromPromptMutation.isPending ||
@@ -402,6 +403,7 @@ function PromptBox() {
                     </div>
                     <Input
                       value={maxStepsOverride ?? ""}
+                      placeholder={`Default: ${MAX_STEPS_DEFAULT}`}
                       onChange={(event) => {
                         setMaxStepsOverride(event.target.value);
                       }}
@@ -413,7 +415,7 @@ function PromptBox() {
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap justify-center gap-4 rounded-sm bg-slate-elevation1 p-4">
+      {/* <div className="flex flex-wrap justify-center gap-4 rounded-sm bg-slate-elevation1 p-4">
         {exampleCases.map((example) => {
           return (
             <ExampleCasePill
@@ -426,7 +428,7 @@ function PromptBox() {
             />
           );
         })}
-      </div>
+      </div> */}
     </div>
   );
 }

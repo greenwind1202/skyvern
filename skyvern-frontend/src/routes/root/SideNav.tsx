@@ -20,11 +20,11 @@ function SideNav() {
       <NavLinkGroup
         title="Build"
         links={[
-          // {
-          //   label: "Discover",
-          //   to: "/discover",
-          //   icon: <CompassIcon className="size-6" />,
-          // },
+          {
+            label: "Discover",
+            to: "/discover",
+            icon: <CompassIcon className="size-6" />,
+          },
           {
             label: "Workflows",
             to: "/workflows",

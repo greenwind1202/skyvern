@@ -37,10 +37,12 @@ class BitwardenLoginCredentialParameterYAML(ParameterYAML):
     bitwarden_client_secret_aws_secret_key: str
     bitwarden_master_password_aws_secret_key: str
     # parameter key for the url to request the login credentials from bitwarden
-    url_parameter_key: str
+    url_parameter_key: str | None = None
     # bitwarden collection id to filter the login credentials from,
     # if not provided, no filtering will be done
     bitwarden_collection_id: str | None = None
+    # bitwarden item id to request the login credential
+    bitwarden_item_id: str | None = None
 
 
 class CredentialParameterYAML(ParameterYAML):
@@ -335,7 +337,8 @@ class TaskV2BlockYAML(BlockYAML):
     url: str | None = None
     totp_verification_url: str | None = None
     totp_identifier: str | None = None
-    max_iterations: int = 10
+    max_iterations: int = settings.MAX_ITERATIONS_PER_TASK_V2
+    max_steps: int = settings.MAX_STEPS_PER_TASK_V2
 
 
 PARAMETER_YAML_SUBCLASSES = (
