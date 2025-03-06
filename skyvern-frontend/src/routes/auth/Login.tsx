@@ -58,7 +58,8 @@ export function Login() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const { setOrganizations, setSelectedOrganizationId } = useOrganizationStore();
+  const { setOrganizations, setSelectedOrganizationId } =
+    useOrganizationStore();
   const queryClient = useQueryClient();
 
   const {
@@ -89,19 +90,21 @@ export function Login() {
         queryKey: ["organizations"],
         queryFn: async () => {
           const client = await getClient(null);
-          const response = await client.get<{ organizations: OrganizationResponse[] }>("/organizations/");
+          const response = await client.get<{
+            organizations: OrganizationResponse[];
+          }>("/organizations/");
           return response.data.organizations;
         },
       });
-      
+
       // Set organizations in store
       setOrganizations(organizations);
       if (organizations.length > 0) {
         setSelectedOrganizationId(organizations[0].organization_id);
       }
-      
-      // Navigate to workflows page
-      navigate("/workflows");
+
+      // Navigate to discover page
+      navigate("/discover");
     } catch (error) {
       console.error("Login failed:", error);
       toast({

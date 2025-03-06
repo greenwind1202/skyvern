@@ -44,7 +44,7 @@ const router = createBrowserRouter([
         element: <Login />,
       },
       {
-        path: "register",
+        path: "484498fb-eefe-4982-aedc-d63989966ca3",
         element: <Register />,
       },
     ],

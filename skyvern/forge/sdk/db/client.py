@@ -2238,7 +2238,7 @@ class AgentDB:
         webhook_callback_url: str | None = None,
     ) -> TaskV2:
         async with self.Session() as session:
-            new_task_v2 = ObserverCruiseModel(
+            new_task_v2 = TaskV2Model(
                 workflow_run_id=workflow_run_id,
                 workflow_id=workflow_id,
                 workflow_permanent_id=workflow_permanent_id,
@@ -2332,7 +2332,7 @@ class AgentDB:
                 if workflow_permanent_id:
                     thought_obj.workflow_permanent_id = workflow_permanent_id
                 if observation:
-                    observer_thought.observation = observation
+                    thought_obj.observation = observation
                 if thought:
                     thought_obj.thought = thought
                 if answer:
