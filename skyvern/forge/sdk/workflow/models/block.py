@@ -1651,7 +1651,9 @@ class SendEmailBlock(Block):
         self, workflow_run_context: WorkflowRunContext, workflow_run_id: str
     ) -> EmailMessage:
         msg = EmailMessage()
-        msg["Subject"] = self.subject + f" - Workflow Run ID: {workflow_run_id}"
+        msg["Subject"] = (
+            self.subject.strip().replace("\n", "").replace("\r", "") + f" - Workflow Run ID: {workflow_run_id}"
+        )
         msg["To"] = ", ".join(self.get_real_email_recipients(workflow_run_context))
         msg["BCC"] = self.sender  # BCC the sender so there is a record of the email being sent
         msg["From"] = self.sender
@@ -2122,7 +2124,8 @@ class TaskV2Block(Block):
     url: str | None = None
     totp_verification_url: str | None = None
     totp_identifier: str | None = None
-    max_iterations: int = 10
+    max_iterations: int = settings.MAX_ITERATIONS_PER_TASK_V2
+    max_steps: int = settings.MAX_STEPS_PER_TASK_V2
 
     def get_all_parameters(
         self,
@@ -2175,7 +2178,7 @@ class TaskV2Block(Block):
             organization=organization,
             task_v2_id=task_v2.observer_cruise_id,
             request_id=None,
-            max_iterations_override=self.max_iterations,
+            max_steps_override=self.max_steps,
             browser_session_id=browser_session_id,
         )
         result_dict = None

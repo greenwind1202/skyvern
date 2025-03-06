@@ -1,15 +1,15 @@
 [tool.poetry]
-name = "skyvern-langchain"
-version = "0.1.6"
-description = ""
+name = "skyvern-llamaindex"
+version = "0.0.4"
+description = "Skyvern integration for LlamaIndex"
 authors = ["lawyzheng <lawy@skyvern.com>"]
-packages = [{ include = "skyvern_langchain" }]
+packages = [{ include = "skyvern_llamaindex" }]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11,<3.12"
 skyvern = "^0.1.56"
-langchain = "^0.3.19"
+llama-index = "^0.12.19"
 
 
 [tool.poetry.group.dev.dependencies]

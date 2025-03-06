@@ -1,5 +1,6 @@
 import { artifactApiBaseUrl } from "@/util/env";
 import { useWorkflowRunQuery } from "../hooks/useWorkflowRunQuery";
+import { artifactApiBaseUrl } from "@/util/env";
 
 function WorkflowRunRecording() {
   const { data: workflowRun } = useWorkflowRunQuery();
